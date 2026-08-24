@@ -14,7 +14,12 @@ CultureRadar-main/
 
 ## Prérequis
 
-- **Python 3.10 ou plus récent** (`python --version` pour vérifier)
+- **Python 3.12** — recommandé fortement (`python --version` pour vérifier). Les
+  versions plus récentes (3.13+) posent parfois problème à l'installation de
+  certaines dépendances compilées (`bcrypt`, `psycopg2-binary`, `cryptography`)
+  faute de paquet précompilé disponible pour la nouvelle version. Si tu as déjà
+  une autre version installée, tu peux installer 3.12 en plus sans la
+  désinstaller (voir "Plusieurs versions de Python" plus bas).
 - **Node.js et npm** (`node --version` et `npm --version` pour vérifier)
 - **Git**
 
@@ -38,8 +43,40 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Créer un fichier `.env` à la racine de ce dossier (non fourni dans le dépôt, il
-contient des secrets) avec ce contenu minimum :
+### Plusieurs versions de Python sur la même machine
+
+Si `python --version` affiche une version différente de 3.12 et que tu ne veux
+pas désinstaller celle déjà présente, installe Python 3.12 en plus (depuis
+python.org, "Add python.exe to PATH" coché comme d'habitude). Ensuite, utilise
+le lanceur `py` avec le numéro de version pour cibler spécifiquement 3.12,
+plutôt que `python` :
+
+```bash
+py -3.12 -m venv venv
+```
+
+Le reste des commandes (`pip install`, `uvicorn`, etc.) fonctionne normalement
+une fois le `venv` créé et activé, peu importe la version utilisée pour le
+créer.
+
+### Configurer le fichier `.env`
+
+Le fichier `.env` contient des secrets et n'est **pas** fourni dans le dépôt
+(voir `.gitignore`) — il faut le créer toi-même, une seule fois, à la racine
+de ce dossier backend (`culture-radar-backend-main/culture-radar-backend-main`,
+au même niveau que `requirements.txt`).
+
+Le plus fiable est de le créer depuis le terminal, dans ce dossier (créer un
+fichier nommé exactement `.env` depuis l'explorateur Windows est piégeux : il
+ajoute souvent `.txt` à la fin sans le montrer) :
+
+```bash
+notepad .env
+```
+
+Windows va demander si tu veux créer un nouveau fichier — accepte. Notepad
+s'ouvre avec un fichier vide : colle ce contenu dedans, puis enregistre
+(Ctrl+S) et ferme :
 
 ```
 DATABASE_URL=sqlite:///./test_local.db
@@ -50,6 +87,18 @@ ACCESS_TOKEN_EXPIRE_MINUTES=60
 (`DATABASE_URL` ci-dessus utilise SQLite pour un test rapide sans rien installer
 d'autre. Pour une vraie base PostgreSQL, remplacer par
 `postgresql://utilisateur:motdepasse@hote:5432/nom_de_la_base`.)
+
+Vérifier que le fichier existe bien sous ce nom exact (pas `.env.txt`) :
+
+```bash
+dir .env*
+```
+
+Doit afficher uniquement `.env`. Si tu vois `.env.txt`, renomme-le :
+
+```bash
+ren .env.txt .env
+```
 
 Puis lancer le serveur :
 
