@@ -1,0 +1,15 @@
+<div class="cookie-banner" *ngIf="visible" role="dialog" aria-modal="true" aria-label="Bandeau de consentement aux cookies">
+  <div class="cookie-content">
+    <p class="cookie-text">
+      <strong>🍪 Ce site utilise des cookies</strong><br />
+      Nous utilisons Google Analytics pour mesurer l'audience de notre site (projet étudiant fictif).
+      Aucune donnée n'est vendue à des tiers.
+      <a routerLink="/mentions-legales" (click)="visible=false">Mentions légales</a> ·
+      <a routerLink="/cgu" (click)="visible=false">CGU</a>
+    </p>
+    <div class="cookie-actions">
+      <button class="btn-refuse" (click)="refuse()" aria-label="Refuser les cookies non essentiels">Refuser</button>
+      <button class="btn-accept" (click)="accept()" aria-label="Accepter les cookies">Accepter</button>
+    </div>
+  </div>
+</div>

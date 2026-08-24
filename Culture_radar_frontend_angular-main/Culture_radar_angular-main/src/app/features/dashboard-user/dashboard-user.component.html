@@ -1,0 +1,108 @@
+<div class="page">
+  <!-- HERO / intro -->
+  <header class="page-hero">
+    <h1>Mon agenda</h1>
+    <p class="subtitle">
+      Retrouvez vos participations, naviguez par mois et gérez vos sorties.
+      Cliquez sur une date pour voir les événements du jour ; vous pouvez
+      <strong>annuler</strong> une sortie future ou <strong>noter</strong> un événement passé.
+    </p>
+    <div class="quick-actions">
+      <a [routerLink]="['/event-list']" class="btn btn-primary">Explorer des événements</a>
+      <a [routerLink]="['/']" class="btn btn-ghost">Retour à l’accueil</a>
+    </div>
+  </header>
+
+  <!-- Grille 2 colonnes -->
+  <div class="page-grid">
+    <!-- Colonne gauche : calendrier -->
+    <section class="agenda card">
+      <header class="cal-header">
+        <button class="nav" (click)="prevMonth()" aria-label="Mois précédent">◀</button>
+        <h2 class="cal-title">{{ monthLabel | titlecase }}</h2>
+        <button class="nav" (click)="nextMonth()" aria-label="Mois suivant">▶</button>
+      </header>
+
+      <!-- Jours de semaine -->
+      <div class="cal-weekdays" aria-hidden="true">
+        <div>Lun</div><div>Mar</div><div>Mer</div><div>Jeu</div><div>Ven</div><div>Sam</div><div>Dim</div>
+      </div>
+
+      <!-- Grille 6x7 -->
+      <div class="cal-grid" *ngIf="!loading; else loadingTpl">
+        <button
+          *ngFor="let d of days"
+          class="day"
+          [class.other]="!d.isCurrentMonth"
+          [class.past]="d.isPast"
+          [class.today]="d.isToday"
+          [class.selected]="d.ymd === selectedYmd"
+          (click)="selectDay(d)"
+          [attr.aria-label]="(d.date | date:'EEEE d MMMM yyyy')"
+        >
+          <span class="num">{{ d.date.getDate() }}</span>
+          <span class="dot" *ngIf="d.events.length"></span>
+        </button>
+      </div>
+
+      <ng-template #loadingTpl>
+        <div class="loading">Chargement de vos participations…</div>
+      </ng-template>
+
+      <!-- Légende -->
+      <footer class="legend">
+        <span class="legend-item"><span class="legend-dot"></span> Événement(s)</span>
+        <span class="legend-item"><span class="legend-key today"></span> Aujourd’hui</span>
+        <span class="legend-item"><span class="legend-key selected"></span> Sélectionné</span>
+      </footer>
+
+      <p class="hint">Astuce : utilisez les flèches ◀ / ▶ pour changer de mois.</p>
+    </section>
+
+    <!-- Colonne droite : détails du jour -->
+    <section class="day-details card">
+      <h3 *ngIf="selectedYmd as ymd" class="day-title">
+        {{ (ymd + 'T00:00:00') | date:'EEEE d MMMM yyyy' | titlecase }}
+      </h3>
+
+      <div *ngIf="selectedEvents.length === 0" class="empty">
+        <div class="empty-illu">🎟️</div>
+        <p>Aucun évènement ce jour.</p>
+        <a [routerLink]="['/event-list']" class="btn btn-link">Voir les événements à venir</a>
+      </div>
+
+      <div class="event-list" *ngIf="selectedEvents.length">
+        <div class="event-card" *ngFor="let p of selectedEvents">
+          <div class="info">
+            <h4>{{ p.evenement_titre }}</h4>
+            <p class="meta">
+              {{ p.occurrence_debut | date:'HH:mm' }}
+              <span *ngIf="p.occurrence_fin"> → {{ p.occurrence_fin | date:'HH:mm' }}</span>
+              <span *ngIf="p.evenement_lieu"> • {{ p.evenement_lieu }}</span>
+            </p>
+            <div class="tags">
+              <span class="tag" *ngIf="p.evenement_type">{{ p.evenement_type }}</span>
+              <span class="tag city" *ngIf="p.evenement_commune">{{ p.evenement_commune }}</span>
+            </div>
+          </div>
+
+          <div class="actions">
+            <a [routerLink]="['/event', p.evenement_id]" class="btn details">Détails</a>
+            <button *ngIf="isFuture(p)" class="btn danger" (click)="cancel(p)">Annuler</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="helper">
+        <h4>Bon à savoir</h4>
+        <ul>
+          <li>Vous pouvez annuler tant que l’événement n’a pas commencé.</li>
+          <li>La notation devient disponible après l’événement.</li>
+          <li>Besoin d’idées&nbsp;? Parcourez la liste complète des événements.</li>
+        </ul>
+      </aside>
+    </section>
+  </div>
+</div>
+
+

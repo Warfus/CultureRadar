@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard-admin
+Disallow: /organizer
+Disallow: /mes-participations
+Disallow: /user
+Disallow: /subscribe
+
+Sitemap: https://ias-b3-X-paris-GX.fr/sitemap.xml

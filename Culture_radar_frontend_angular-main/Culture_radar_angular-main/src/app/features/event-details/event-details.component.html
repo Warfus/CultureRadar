@@ -1,0 +1,170 @@
+<section class="wrap" *ngIf="!loading && event as e">
+  <!-- HERO -->
+  <header class="hero">
+    <img
+      class="hero-img"
+      [src]="e.image_url || '/assets/Concert.jpg'"
+      (error)="onImgError($event)"
+      [alt]="e.titre" />
+
+    <div class="hero-info">
+      <h1>{{ e.titre }}</h1>
+      <p class="place">
+        <span *ngIf="e.lieu">{{ e.lieu }}</span>
+        <span *ngIf="e.commune"> • {{ e.commune }}</span>
+      </p>
+
+      <div class="keywords" *ngIf="e.keywords?.length">
+        <span class="chip" *ngFor="let k of e.keywords">{{ k }}</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="two-col">
+    <article class="panel">
+      <h2>À propos</h2>
+      <p class="desc" [innerHTML]="formatDesc(e.longdescription || e.description)"></p>
+
+      <h2>Créneaux</h2>
+
+<!-- Nav mensuelle -->
+<div class="month-nav" *ngIf="monthGroups.length > 0">
+  <button class="nav-arrow" type="button" [disabled]="!canPrev" (click)="prevMonth()" aria-label="Mois précédent">‹</button>
+  <div class="month-label">{{ currentGroup?.label }}</div>
+  <button class="nav-arrow" type="button" [disabled]="!canNext" (click)="nextMonth()" aria-label="Mois suivant">›</button>
+</div>
+
+
+<div class="occ-list" *ngIf="currentGroup?.items?.length; else noOccThisMonth">
+  <label
+    class="occ"
+    *ngFor="let o of currentGroup!.items; trackBy: trackByOcc"
+    [class.is-past]="isBeforeToday(o)"
+    [title]="isBeforeToday(o) ? 'Créneau passé — non sélectionnable' : ''"
+  >
+    <input
+      type="checkbox"
+      [checked]="isSelected(o.id)"
+      [disabled]="pendingOccIds.has(o.id) || isBeforeToday(o)"
+      (click)="onOccClick(o, $event)"
+    />
+    <span class="occ-date">
+      {{ o.debut | date:'EEE d MMM, HH:mm' }}
+      <ng-container *ngIf="o.fin"> – {{ o.fin | date:'HH:mm' }}</ng-container>
+      <span *ngIf="o.all_day"> (toute la journée)</span>
+      <span *ngIf="isBeforeToday(o)" class="badge-past">Passé</span>
+    </span>
+    <span class="occ-state" *ngIf="pendingOccIds.has(o.id)">…</span>
+  </label>
+</div>
+
+<ng-template #noOccThisMonth>
+  <p class="muted">Aucun créneau sur ce mois.</p>
+</ng-template>
+<p class="muted small">Clique un créneau pour <strong>ajouter/retirer</strong> de ton agenda.</p>
+  </article>
+<!-- Colonne droite : carte + infos -->
+    <aside class="panel secondary">
+      <div class="map-head">
+        <h2>Se rendre sur place</h2>
+        <div class="segmented">
+          <label><input type="radio" name="mode" value="walk" [checked]="travelMode==='walk'" (change)="onModeChange('walk')"> À pied</label>
+          <label><input type="radio" name="mode" value="bike" [checked]="travelMode==='bike'" (change)="onModeChange('bike')"> Vélo</label>
+          <label><input type="radio" name="mode" value="car"  [checked]="travelMode==='car'"  (change)="onModeChange('car')"> Voiture</label>
+        </div>
+      </div>
+
+      <div id="map" class="map" *ngIf="e.latitude && e.longitude; else noMap"></div>
+      <ng-template #noMap>
+        <p class="muted">Localisation indisponible pour cet événement.</p>
+      </ng-template>
+
+      <div class="geo-actions">
+        <button class="btn" type="button" (click)="useMyLocation()">Utiliser ma position</button>
+        <a *ngIf="gmapsLink" class="btn" [href]="gmapsLink" target="_blank" rel="noopener">Google Maps</a>
+      </div>
+
+      <div class="stats" *ngIf="userLoc && distanceKm !== null">
+        <div><strong>Distance :</strong> {{ distanceKm | number:'1.1-1' }} km</div>
+        <div><strong>Durée estimée :</strong> ~ {{ estimatedMinutes }} min</div>
+      </div>
+
+      <h2>Infos</h2>
+      <ul class="info-list">
+        <li *ngIf="e.adresse">{{ e.adresse }}</li>
+        <li *ngIf="e.code_postal || e.commune">{{ e.code_postal }} {{ e.commune }}</li>
+        <li *ngIf="e.pays">{{ e.pays }}</li>
+        <li *ngIf="e.prix !== null && e.prix !== undefined">Prix : {{ e.prix | number:'1.0-2' }} €</li>
+        <li *ngIf="e.conditions">{{ e.conditions }}</li>
+      </ul>
+    </aside>
+  </div>
+</section>
+
+<section class="panel full">
+
+<h2>Notes & avis</h2>
+
+  <!-- moyenne + compteur -->
+  <div class="rating-avg" *ngIf="ratingAvg as ra">
+    <span class="stars" [title]="ra.average !== null ? (ra.average | number:'1.1-2') + '/5' : 'Pas de note'">
+      <ng-container *ngIf="ra.average !== null; else noAvg">
+        <!-- étoiles unicode simples -->
+        <span *ngFor="let s of [1,2,3,4,5]">{{ s <= Math.round(ra.average) ? '★' : '☆' }}</span>
+        <span class="avg-num">({{ ra.average | number:'1.1-2' }})</span>
+      </ng-container>
+      <ng-template #noAvg>Pas encore de note</ng-template>
+    </span>
+    <span class="count">• {{ ra.count }} avis</span>
+  </div>
+
+  <!-- form noter (si connecté) -->
+  <div class="rate-box" *ngIf="isLoggedIn; else loginToRate">
+    <label>Votre note :</label>
+    <select [(ngModel)]="myRating">
+      <option [ngValue]="null">—</option>
+      <option *ngFor="let n of [1,2,3,4,5]" [ngValue]="n">{{ n }}</option>
+    </select>
+
+    <label>Commentaire (optionnel) :</label>
+    <textarea [(ngModel)]="myComment" rows="3" placeholder="Partage ton ressenti (optionnel)"></textarea>
+
+    <button class="btn" type="button" (click)="submitMyRating()" [disabled]="rateBusy">
+      {{ rateBusy ? 'Envoi…' : 'Envoyer ma note' }}
+    </button>
+    <div class="error" *ngIf="rateError">{{ rateError }}</div>
+  </div>
+  <ng-template #loginToRate>
+    <p class="muted">Connecte-toi pour laisser une note et un commentaire.</p>
+  </ng-template>
+
+  <!-- liste des avis -->
+  <ul class="reviews" *ngIf="reviews.length; else noReviews">
+    <li *ngFor="let r of reviews">
+      <div class="rev-head">
+        <strong>{{ r.user_nom || 'Utilisateur' }}</strong>
+        <span class="rev-stars">
+          <span *ngFor="let s of [1,2,3,4,5]">{{ s <= r.rating ? '★' : '☆' }}</span>
+        </span>
+        <span class="rev-date">{{ r.created_at | date:'short' }}</span>
+      </div>
+      <p class="rev-text" *ngIf="r.commentaire">{{ r.commentaire }}</p>
+    </li>
+  </ul>
+  <ng-template #noReviews>
+    <p class="muted">Aucun avis pour le moment.</p>
+  </ng-template>
+  </section>
+
+    
+
+
+<!-- Skeleton -->
+<section class="wrap" *ngIf="loading">
+  <div class="skeleton hero-skel"></div>
+  <div class="two-col">
+    <div class="skeleton panel-skel"></div>
+    <div class="skeleton panel-skel"></div>
+  </div>
+</section>
+

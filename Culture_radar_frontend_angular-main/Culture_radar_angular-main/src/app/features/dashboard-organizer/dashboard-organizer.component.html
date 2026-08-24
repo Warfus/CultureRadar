@@ -1,0 +1,53 @@
+<h1>Espace organisateur</h1>
+
+<div class="bar">
+  <a class="btn" routerLink="/organizer/new">+ Créer un événement</a>
+</div>
+
+<div *ngIf="error" class="alert alert-error">{{ error }}</div>
+<div *ngIf="loading" class="loading">Chargement…</div>
+
+<div class="grid" *ngIf="!loading && events.length; else noEvents">
+  <article class="card" *ngFor="let ev of events">
+    <div class="thumb">
+      <img [src]="ev.image_url || '/assets/Concert.jpg'"
+           [alt]="ev.titre"
+           (error)="onImgError($event)" />
+    </div>
+
+    <div class="body">
+      <h3 class="title">{{ ev.titre }}</h3>
+
+      <p class="place">
+        <ng-container *ngIf="ev.lieu">{{ ev.lieu }}</ng-container>
+        <ng-container *ngIf="ev.commune"> — {{ ev.commune }}</ng-container>
+      </p>
+
+      <p class="date" *ngIf="nextOccurrence(ev) as nd">
+        Prochain créneau : <strong>{{ nd | date:'EEE d MMM, HH:mm' }}</strong>
+      </p>
+      <p class="date muted" *ngIf="!nextOccurrence(ev)">Aucun créneau à venir</p>
+
+      <div class="rating" *ngIf="avgById.get(ev.id) as ra">
+        <span class="stars" [title]="ra.average !== null ? (ra.average | number:'1.1-2') + '/5' : 'Pas de note'">
+          {{ stars(ra.average) }}
+        </span>
+        <span class="avg" *ngIf="ra.average !== null">({{ ra.average | number:'1.1-2' }})</span>
+        <span class="count">• {{ ra.count }} avis</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" type="button" (click)="view(ev.id)">Voir</button>
+      <a class="btn accent" [routerLink]="['/organizer/promote', ev.id]">Promouvoir</a>
+      <button class="btn danger" type="button" (click)="deleteEvent(ev.id)">Supprimer</button>
+    </div>
+  </article>
+</div>
+
+<ng-template #noEvents>
+  <p class="muted">Aucun événement pour le moment.</p>
+</ng-template>
+
+
+
