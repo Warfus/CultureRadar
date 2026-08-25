@@ -22,7 +22,7 @@ import { CommonModule } from '@angular/common';
         <li>
           Envoyez-nous un e-mail à
           <a [href]="mailto" class="link" rel="noopener">
-            culture.radar.groupe3&#64;gmail.com
+            garry.girard.edu&#64;groupe-gema.com
           </a>
           en précisant les informations ci-dessous.
         </li>
@@ -62,7 +62,7 @@ import { CommonModule } from '@angular/common';
 
     <footer class="foot">
       Une question&nbsp;? Écrivez-nous à
-      <a [href]="plainMailto" class="link" rel="noopener">culture.radar.groupe3&#64;gmail.com</a>.
+      <a [href]="plainMailto" class="link" rel="noopener">garry.girard.edu&#64;groupe-gema.com</a>.
     </footer>
   </section>
   `,
