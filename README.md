@@ -126,6 +126,11 @@ local (`http://127.0.0.1:8000`) grâce à `src/environments/environment.ts`.
 
 ## Déploiement en production
 
+Le site est déployé sur Render :
+
+- Frontend : https://ias-b3-1-paris-g3.fr
+- Backend (API) : https://api.ias-b3-1-paris-g3.fr/docs
+
 `src/environments/environment.prod.ts` contient l'URL du backend déployé
 (Render). C'est ce fichier qui est utilisé automatiquement quand on build avec :
 
@@ -137,10 +142,10 @@ Vérifier que cette URL est à jour avant tout déploiement réel.
 
 ## Export de la base de données
 
-Un export SQL de démonstration (schéma complet + données représentatives) est
-disponible séparément dans le dossier des livrables du projet
-(`Export_SQL_CultureRadar.sql`), généré en exécutant le schéma réel de
-l'application sur une base PostgreSQL de test.
+Un export SQL réel (schéma complet + données) de la base de données de
+production est disponible dans le dossier des livrables du projet
+(`Export_SQL_CultureRadar.sql`), généré via `pg_dump` sur la base PostgreSQL
+Render en production, et vérifié par restauration complète.
 
 ## Notes
 
