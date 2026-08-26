@@ -105,18 +105,23 @@ def _apply_sql_filters(
 
     needs_occurrence_join = future_only or date_from or date_to or hour_from is not None or hour_to is not None
     if needs_occurrence_join:
-        query = query.join(models.Occurrence)
+        # NB: on filtre via un sous-select d'IDs plutot que join()+distinct() sur la ligne
+        # complete : Evenement.keywords est de type JSON, et PostgreSQL ne sait pas comparer
+        # deux JSON pour l'egalite (necessaire pour un DISTINCT sur toutes les colonnes),
+        # ce qui provoquait une ProgrammingError "could not identify an equality operator
+        # for type json" sur /evenements/home et /evenements/reco.
+        occ_query = query.session.query(models.Occurrence.evenement_id)
         if future_only:
-            query = query.filter(models.Occurrence.debut >= _now())
+            occ_query = occ_query.filter(models.Occurrence.debut >= _now())
         if date_from:
-            query = query.filter(models.Occurrence.debut >= date_from)
+            occ_query = occ_query.filter(models.Occurrence.debut >= date_from)
         if date_to:
-            query = query.filter(models.Occurrence.debut <= date_to)
+            occ_query = occ_query.filter(models.Occurrence.debut <= date_to)
         if hour_from is not None:
-            query = query.filter(func.extract("hour", models.Occurrence.debut) >= hour_from)
+            occ_query = occ_query.filter(func.extract("hour", models.Occurrence.debut) >= hour_from)
         if hour_to is not None:
-            query = query.filter(func.extract("hour", models.Occurrence.debut) <= hour_to)
-        query = query.distinct()
+            occ_query = occ_query.filter(func.extract("hour", models.Occurrence.debut) <= hour_to)
+        query = query.filter(models.Evenement.id.in_(occ_query))
 
     return query
 
