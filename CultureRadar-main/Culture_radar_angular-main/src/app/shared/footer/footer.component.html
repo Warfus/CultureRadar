@@ -1,16 +1,17 @@
-<footer class="footer">
+<footer class="footer" role="contentinfo">
   <div class="footer-left">
-    <img src="/logo.png" alt="Logo CultureRadar" class="footer-logo" />
+    <img src="/logo.png" alt="CultureRadar, retour à l'accueil" class="footer-logo" />
   </div>
 
-  <div class="footer-center">
+  <nav class="footer-center" aria-label="Liens du pied de page">
+    <a routerLink="/devenir-organisateur">Organisateurs</a>
     <a routerLink="/contact">Contact</a>
     <a routerLink="/mentions-legales">Mentions légales</a>
     <a routerLink="/cgu">CGU</a>
-  </div>
+  </nav>
 
   <div class="footer-right">
     <p>&copy; 2025 CultureRadar. Tous droits réservés.</p>
-    <p class="mention-etudiant">Projet étudiant fictif IAS B3 — Aucun achat ou réservation réelle.</p>
+    <p class="mention-etudiant">Projet étudiant fictif IAS B3 : aucun achat ni aucune réservation réelle.</p>
   </div>
 </footer>

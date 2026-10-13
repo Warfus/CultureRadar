@@ -7,6 +7,7 @@
   <div class="header-right" *ngIf="!isLoggedIn; else loggedBlock">
     <a [routerLink]="['/event-list']" class="header-btn filled">Rechercher</a>
     <a (click)="goAgenda()" class="header-btn">Agenda</a>
+    <a [routerLink]="['/devenir-organisateur']" class="header-btn">Organisateurs</a>
     <a [routerLink]="['/login']" class="header-btn">Connexion</a>
     <a [routerLink]="['/register']" class="header-btn filled">Inscription</a>
   </div>

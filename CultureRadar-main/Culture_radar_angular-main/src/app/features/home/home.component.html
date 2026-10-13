@@ -1,10 +1,12 @@
-<!-- Bannière cachée si connecté -->
+<!-- Bannière : le H1 reste présent pour le SEO, même connecté -->
 <div class="hero-banner" *ngIf="showHero">
   <div class="hero-overlay">
-    <h1 class="hero-title">Découvrez les meilleurs événements près de chez vous</h1>
-    <p class="hero-subtitle">Concerts, expositions, festivals… il y en a pour tous les goûts !</p>
+    <h1 class="hero-title">Trouvez la sortie culturelle qui vous ressemble, près de chez vous</h1>
+    <p class="hero-subtitle">Concerts, expositions, théâtre, ateliers : CultureRadar vous recommande les meilleurs événements selon vos goûts, votre quartier, votre budget et même la météo.</p>
+    <a routerLink="/event-list" class="hero-cta">Voir les événements</a>
   </div>
 </div>
+<h1 class="sr-only" *ngIf="!showHero">CultureRadar : vos sorties culturelles recommandées</h1>
 
 <section class="event-section">
   <h2 class="section-title">{{ sectionTitle }}</h2>
@@ -72,8 +74,48 @@
   </div>
 </section>
 
+<section class="info-section how" aria-labelledby="how-title">
+  <h2 id="how-title" class="section-title">Comment fonctionne CultureRadar ?</h2>
+  <div class="info-grid">
+    <article class="info-card">
+      <h3>1. Dites-nous ce que vous aimez</h3>
+      <p>Choisissez vos envies, votre quartier et vos disponibilités en une minute.</p>
+    </article>
+    <article class="info-card">
+      <h3>2. Recevez des idées sur mesure</h3>
+      <p>Nous croisons l'agenda culturel, la météo et vos trajets pour vous proposer les bonnes sorties.</p>
+    </article>
+    <article class="info-card">
+      <h3>3. Réservez en deux clics</h3>
+      <p>Ajoutez l'événement à vos sorties et retrouvez-le dans votre espace personnel.</p>
+    </article>
+  </div>
+</section>
 
+<section class="info-section" aria-labelledby="explore-title">
+  <h2 id="explore-title" class="section-title">Explorez par envie</h2>
+  <div class="info-grid">
+    <a class="info-card link-card" [routerLink]="['/event-list']" [queryParams]="{ q: 'concert' }">
+      <h3>Concerts</h3><p>Jazz, rap, classique, scènes ouvertes : la musique live près de chez vous.</p>
+    </a>
+    <a class="info-card link-card" [routerLink]="['/event-list']" [queryParams]="{ q: 'exposition' }">
+      <h3>Expositions</h3><p>Musées, galeries et ateliers d'artistes, des grandes expos aux pépites de quartier.</p>
+    </a>
+    <a class="info-card link-card" [routerLink]="['/event-list']" [queryParams]="{ q: 'théâtre' }">
+      <h3>Théâtre et spectacles</h3><p>Comédies, improvisation, danse et cirque à petit prix.</p>
+    </a>
+    <a class="info-card link-card" [routerLink]="['/event-list']" [queryParams]="{ q: 'famille' }">
+      <h3>Sorties en famille</h3><p>Ateliers et spectacles adaptés à l'âge de vos enfants.</p>
+    </a>
+  </div>
+</section>
 
-
-
-
+<section class="info-section orga" aria-labelledby="orga-title">
+  <h2 id="orga-title" class="section-title">Vous organisez des événements ?</h2>
+  <div class="info-grid">
+    <article class="info-card"><h3>Publication gratuite</h3><p>Publiez vos concerts, expositions et ateliers sans frais ni limite.</p></article>
+    <article class="info-card"><h3>Un public qui vous ressemble</h3><p>Vos événements sont recommandés aux habitants que vos sorties intéressent vraiment.</p></article>
+    <article class="info-card"><h3>Des statistiques claires</h3><p>Suivez les vues et les réservations depuis votre espace organisateur.</p></article>
+  </div>
+  <p class="center"><a routerLink="/devenir-organisateur" class="hero-cta">Devenir organisateur</a></p>
+</section>

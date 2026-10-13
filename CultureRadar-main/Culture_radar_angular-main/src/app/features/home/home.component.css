@@ -205,3 +205,17 @@
 
 
 
+
+
+/* ---- Sections ajoutées (structure Hn de l'accueil) ---- */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.hero-cta { display: inline-block; margin-top: 16px; padding: 12px 24px; border-radius: 24px; background: #D72670; color: #fff; font-family: 'Poppins', sans-serif; font-weight: 700; text-decoration: none; }
+.hero-cta:hover, .hero-cta:focus-visible { background: #9e0047; outline: 3px solid #fde4b1; outline-offset: 2px; }
+.info-section { padding: 40px 20px; font-family: 'Roboto', sans-serif; }
+.info-section.how, .info-section.orga { background: #fff7e8; }
+.info-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
+.info-card { background: #fff; border-radius: 16px; padding: 24px; box-shadow: 0 6px 16px rgba(0,0,0,.06); color: #222; text-decoration: none; }
+.info-card h3 { font-family: 'Poppins', sans-serif; font-size: 19px; margin: 0 0 8px; color: #9e0047; }
+.info-card p { margin: 0; color: #444; line-height: 1.5; }
+.link-card:hover, .link-card:focus-visible { transform: translateY(-3px); outline: 3px solid #049eb3; }
+.center { text-align: center; }
