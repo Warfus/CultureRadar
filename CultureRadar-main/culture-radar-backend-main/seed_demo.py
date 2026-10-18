@@ -1,24 +1,32 @@
 """Remplit la base avec des événements de démonstration À VENIR (Île-de-France).
 
-Usage (depuis le dossier du backend, avec DATABASE_URL défini dans .env) :
+Usage (depuis le dossier du backend, avec DATABASE_URL et SEED_PASSWORD définis dans .env) :
     python seed_demo.py
 
-- Crée (si absents) un compte utilisateur et un compte organisateur de test.
+- Crée (si absents) un compte utilisateur et un compte organisateur de test,
+  avec le mot de passe défini par SEED_PASSWORD.
 - Supprime les anciens événements de démonstration (mot-clé "demo") puis en recrée 60,
   datés à partir d'aujourd'hui sur 6 mois, chacun avec 2 à 4 séances réservables.
 - Peut être relancé à tout moment pour « rafraîchir » les dates.
 """
+import os
 import random
+import sys
 from datetime import datetime, timedelta, timezone
 
 from app.database import SessionLocal, engine
 from app import models
 from app.auth import hash_mot_de_passe
 
+# Le mot de passe des comptes de test ne doit pas être écrit dans le code :
+# il est lu depuis le .env (déjà chargé par app.database).
+MDP_TEST = os.getenv("SEED_PASSWORD")
+if not MDP_TEST:
+    sys.exit("Erreur : la variable SEED_PASSWORD est absente du fichier .env.\n"
+             "Ajoutez une ligne SEED_PASSWORD=<mot de passe des comptes de test> puis relancez le script.")
+
 models.Base.metadata.create_all(bind=engine)
 random.seed(42)
-
-MDP_TEST = "CultureRadar2025!"
 
 LIEUX = [
     ("La Marbrerie", "Montreuil", "21 rue Alexis Lepère", "93100", 48.8566, 2.4390),
@@ -98,7 +106,7 @@ def main():
     db.commit()
     db.close()
     print(f"{len(anciens)} anciens événements de démo supprimés, {n} événements à venir créés.")
-    print(f"Comptes de test : test@cultureradar.fr / orga@cultureradar.fr (mot de passe : {MDP_TEST})")
+    print(f"Comptes de test : test@cultureradar.fr / orga@cultureradar.fr (mot de passe : valeur de SEED_PASSWORD dans le .env)")
 
 if __name__ == "__main__":
     main()
