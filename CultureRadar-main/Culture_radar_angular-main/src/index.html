@@ -4,6 +4,23 @@
   <meta charset="utf-8" />
   <title>CultureRadar — Découvrez les événements culturels près de chez vous</title>
   <base href="/" />
+  <!-- Liens directs (ex. /mentions-legales) : la page relais (public/404.html et public/mentions-legales/index.html, etc.)
+       renvoie ici avec ?__route=..., on remet l'adresse demandée avant le démarrage d'Angular -->
+  <script>
+    (function () {
+      try {
+        var m = /[?&]__route=([^&]*)/.exec(window.location.search);
+        if (!m) { return; }
+        var r = decodeURIComponent(m[1]);
+        if (r.charAt(0) !== '/' || r.charAt(1) === '/' || r.charAt(1) === '\\') { return; }
+        var i = r.search(/[?#]/);
+        var chemin = i < 0 ? r : r.slice(0, i);
+        var suite = i < 0 ? '' : r.slice(i);
+        if (chemin.length > 1) { chemin = chemin.replace(/\/+$/, '') || '/'; }
+        window.history.replaceState(null, '', chemin + suite);
+      } catch (e) { /* on reste sur l'accueil */ }
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
