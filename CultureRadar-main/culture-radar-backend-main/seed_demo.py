@@ -21,12 +21,6 @@ from app.auth import hash_mot_de_passe
 # Le mot de passe des comptes de test ne doit pas être écrit dans le code :
 # il est lu depuis le .env (déjà chargé par app.database).
 MDP_TEST = os.getenv("SEED_PASSWORD")
-if not MDP_TEST:
-    sys.exit("Erreur : la variable SEED_PASSWORD est absente du fichier .env.\n"
-             "Ajoutez une ligne SEED_PASSWORD=<mot de passe des comptes de test> puis relancez le script.")
-
-models.Base.metadata.create_all(bind=engine)
-random.seed(42)
 
 LIEUX = [
     ("La Marbrerie", "Montreuil", "21 rue Alexis Lepère", "93100", 48.8566, 2.4390),
@@ -56,17 +50,18 @@ TYPES = [
     ("Concert de musique classique", ["musique", "concert", "classique"], 15, (8, 99)),
 ]
 
-def get_or_create_user(db, email, nom, role):
+def get_or_create_user(db, email, nom, role, mot_de_passe=None):
     u = db.query(models.Utilisateur).filter_by(email=email).first()
     if not u:
-        u = models.Utilisateur(nom=nom, email=email, mot_de_passe=hash_mot_de_passe(MDP_TEST),
+        u = models.Utilisateur(nom=nom, email=email, mot_de_passe=hash_mot_de_passe(mot_de_passe or MDP_TEST),
                                role=role, email_verifie=True, musique=True, expositions=True, age=29)
         db.add(u)
         db.flush()
     return u
 
-def main():
-    db = SessionLocal()
+def seed(db):
+    """Crée les comptes de test et 60 événements de démonstration à venir."""
+    random.seed(42)
     get_or_create_user(db, "test@cultureradar.fr", "Utilisateur Test", "user")
     orga = get_or_create_user(db, "orga@cultureradar.fr", "Organisateur Test", "organizer")
 
@@ -104,8 +99,18 @@ def main():
             db.add(models.Occurrence(evenement_id=ev.id, debut=debut, fin=debut + timedelta(hours=2), all_day=False))
         n += 1
     db.commit()
+    return len(anciens), n
+
+
+def main():
+    if not MDP_TEST:
+        sys.exit("Erreur : la variable SEED_PASSWORD est absente du fichier .env.\n"
+                 "Ajoutez une ligne SEED_PASSWORD=<mot de passe des comptes de test> puis relancez le script.")
+    models.Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+    anciens, n = seed(db)
     db.close()
-    print(f"{len(anciens)} anciens événements de démo supprimés, {n} événements à venir créés.")
+    print(f"{anciens} anciens événements de démo supprimés, {n} événements à venir créés.")
     print(f"Comptes de test : test@cultureradar.fr / orga@cultureradar.fr (mot de passe : valeur de SEED_PASSWORD dans le .env)")
 
 if __name__ == "__main__":
