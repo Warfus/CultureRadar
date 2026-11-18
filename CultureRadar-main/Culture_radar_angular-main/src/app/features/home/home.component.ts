@@ -9,6 +9,7 @@ import { AuthService } from '../../shared/auth.service';
 import { SearchService } from '../../shared/search.service';
 import { environment } from '../../../environments/environment';
 
+import { imageParDefaut } from '../../shared/event-image';
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -148,7 +149,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         description: e.description,
         image_url: e.image_url
           ? `https://img.openagenda.com/u/500x0/main/${e.image_url}`
-          : '/assets/Concert.jpg',
+          : imageParDefaut(e.keywords, e.titre),
         lieu: e.lieu,
 
         // 👉 plage globale (1ère occurrence -> dernière occurrence)
