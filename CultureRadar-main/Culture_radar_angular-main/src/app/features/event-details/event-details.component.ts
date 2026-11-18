@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { AuthService } from '../../shared/auth.service';
 import { environment } from '../../../environments/environment';
 
+import { imageParDefaut } from '../../shared/event-image';
 type Occ = { id: number; debut: string; fin?: string | null; all_day?: boolean };
 type Ev = {
   id: number;
@@ -166,6 +167,7 @@ export class EventDetailsComponent implements OnInit, OnDestroy {
     this.http.get<Ev>(`${this.API_BASE}/evenements/${id}`).subscribe({
       next: (ev) => {
         if (ev?.image_url) ev.image_url = `https://img.openagenda.com/u/1200x0/main/${ev.image_url}`;
+        else if (ev) ev.image_url = imageParDefaut((ev as any).keywords, ev.titre);
         ev.occurrences = (ev.occurrences || [])
           .slice()
           .sort((a, b) => new Date(a.debut).getTime() - new Date(b.debut).getTime());

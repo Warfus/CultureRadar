@@ -8,6 +8,7 @@ import { AuthService } from '../../shared/auth.service';
 import { environment } from '../../../environments/environment';
 
 
+import { imageParDefaut } from '../../shared/event-image';
 type Ev = {
   id: number;
   title: string;
@@ -321,7 +322,7 @@ export class EventListComponent implements OnInit, OnDestroy {
       description: e.description,
       image_url: e.image_url
         ? `https://img.openagenda.com/u/500x0/main/${e.image_url}`
-        : '/assets/Concert.jpg',
+        : imageParDefaut(e.keywords, e.titre),
       lieu: e.lieu,
       commune: e.commune,
       date: this.nextStart(e.occurrences),
