@@ -12,7 +12,7 @@ import { RouterModule } from '@angular/router';
     <p class="lead">Salles indépendantes, associations, collectifs, festivals, médiathèques : publiez gratuitement vos événements
       sur CultureRadar et nous les recommandons aux habitants qu'ils peuvent vraiment intéresser, selon leurs goûts, leur quartier et leurs disponibilités.</p>
     <div class="cta-row">
-      <a routerLink="/register" class="btn primary">Créer mon compte organisateur</a>
+      <a routerLink="/inscription-organisateur" class="btn primary">Créer mon compte organisateur</a>
       <a href="#offres" class="btn ghost">Voir les offres</a>
     </div>
   </section>
@@ -52,7 +52,7 @@ import { RouterModule } from '@angular/router';
     <section aria-labelledby="etapes-h2">
       <h2 id="etapes-h2">Comment ça marche ?</h2>
       <ol class="steps">
-        <li><h3>Créez votre compte</h3><p>Inscrivez-vous avec l'adresse e-mail de votre structure, puis demandez l'accès organisateur depuis la page contact.</p></li>
+        <li><h3>Créez votre compte organisateur</h3><p>Remplissez le formulaire dédié aux organisateurs : nom et type de votre structure, SIRET, ville, programmation et personne à contacter.</p></li>
         <li><h3>Publiez vos événements</h3><p>Depuis l'espace « Organiser », ajoutez vos événements et leurs séances en quelques clics.</p></li>
         <li><h3>Touchez un nouveau public</h3><p>Vos événements sont recommandés, réservés et notés : vous voyez l'effet en temps réel.</p></li>
       </ol>
@@ -83,13 +83,13 @@ import { RouterModule } from '@angular/router';
       <h2 id="faq-h2">Questions fréquentes</h2>
       <details><summary>La publication est-elle vraiment gratuite ?</summary><p>Oui. Seule la mise en avant, facultative, est payante.</p></details>
       <details><summary>Quels types d'événements puis-je publier ?</summary><p>Concerts, expositions, spectacles, ateliers, festivals, visites, conférences : tout événement culturel ouvert au public.</p></details>
-      <details><summary>Combien de temps pour activer mon espace ?</summary><p>Votre accès organisateur est activé sous 48 heures ouvrées après votre demande.</p></details>
+      <details><summary>Combien de temps pour activer mon espace ?</summary><p>Votre espace organisateur est ouvert dès la création du compte ; notre équipe vérifie ensuite les informations de votre structure sous 48 heures ouvrées.</p></details>
     </section>
 
     <section class="final" aria-labelledby="final-h2">
       <h2 id="final-h2">Prêt à faire découvrir votre programmation ?</h2>
       <div class="cta-row">
-        <a routerLink="/register" class="btn primary">Devenir organisateur</a>
+        <a routerLink="/inscription-organisateur" class="btn primary">Devenir organisateur</a>
         <a routerLink="/contact" class="btn ghost">Poser une question</a>
       </div>
       <p class="note">Projet étudiant fictif IAS B3 : aucune transaction réelle n'est effectuée.</p>

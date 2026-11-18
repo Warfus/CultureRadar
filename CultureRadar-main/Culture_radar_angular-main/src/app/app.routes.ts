@@ -44,6 +44,13 @@ export const routes: Routes = [
   },
 
   {
+    path: 'inscription-organisateur',
+    loadComponent: () =>
+      import('./features/inscription-organisateur/inscription-organisateur.component')
+        .then(m => m.InscriptionOrganisateurComponent)
+  },
+
+  {
     path: 'devenir-organisateur',
     loadComponent: () =>
       import('./features/devenir-organisateur/devenir-organisateur.component')
