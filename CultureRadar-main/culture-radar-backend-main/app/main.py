@@ -20,6 +20,10 @@ app.add_middleware(
 
 models.Base.metadata.create_all(bind=engine)
 
+from app.bootstrap import bootstrap_si_base_vide  # noqa: E402
+
+bootstrap_si_base_vide()
+
 UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
