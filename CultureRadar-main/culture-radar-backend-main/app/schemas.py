@@ -48,6 +48,37 @@ class UtilisateurUpdate(BaseModel):
     mobility: Optional[str] = None
 
 
+class ProfilOrganisateurBase(BaseModel):
+    nom_structure: str = Field(..., min_length=2, max_length=120)
+    type_structure: str = Field(..., pattern="^(salle|association|collectif|festival|collectivite|autre)$")
+    siret: Optional[str] = Field(None, pattern=r"^\d{14}$")
+    fonction_referent: Optional[str] = None
+    telephone: Optional[str] = None
+    site_web: Optional[str] = None
+    adresse: Optional[str] = None
+    code_postal: Optional[str] = Field(None, pattern=r"^\d{5}$")
+    commune: Optional[str] = None
+    categories: Optional[List[str]] = None
+    frequence: Optional[str] = None
+    description: Optional[str] = Field(None, max_length=1000)
+
+
+class ProfilOrganisateurResponse(ProfilOrganisateurBase):
+    id: int
+    utilisateur_id: int
+    created_at: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class OrganisateurCreate(BaseModel):
+    """Formulaire d'inscription organisateur : compte du référent + structure."""
+    nom: str = Field(..., min_length=1)  # nom et prénom du référent
+    email: str
+    mot_de_passe: str = Field(..., min_length=8)
+    structure: ProfilOrganisateurBase
+
+
 class LoginRequest(BaseModel):
     email: str
     mot_de_passe: str

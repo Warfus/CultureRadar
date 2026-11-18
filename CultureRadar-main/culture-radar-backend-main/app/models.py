@@ -52,6 +52,34 @@ class Utilisateur(Base):
     ratings = relationship(
         "Rating", back_populates="utilisateur", cascade="all, delete-orphan"
     )
+    profil_organisateur = relationship(
+        "ProfilOrganisateur", back_populates="utilisateur", uselist=False,
+        cascade="all, delete-orphan",
+    )
+
+
+class ProfilOrganisateur(Base):
+    """Informations propres aux organisateurs, saisies dans le formulaire
+    d'inscription organisateur (distinct de l'inscription grand public)."""
+    __tablename__ = "profils_organisateurs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    utilisateur_id = Column(Integer, ForeignKey("utilisateurs.id", ondelete="CASCADE"), unique=True, nullable=False)
+    nom_structure = Column(String, nullable=False)
+    type_structure = Column(String, nullable=False)  # salle | association | collectif | festival | collectivite | autre
+    siret = Column(String, nullable=True)
+    fonction_referent = Column(String, nullable=True)
+    telephone = Column(String, nullable=True)
+    site_web = Column(String, nullable=True)
+    adresse = Column(String, nullable=True)
+    code_postal = Column(String, nullable=True)
+    commune = Column(String, nullable=True)
+    categories = Column(JSON, nullable=True)  # ["concert", "exposition", ...]
+    frequence = Column(String, nullable=True)  # nombre d'événements par mois
+    description = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    utilisateur = relationship("Utilisateur", back_populates="profil_organisateur")
 
 
 class Evenement(Base):

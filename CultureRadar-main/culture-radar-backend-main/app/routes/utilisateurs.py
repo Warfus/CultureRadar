@@ -26,6 +26,37 @@ def create_utilisateur(utilisateur: schemas.UtilisateurCreate, db: Session = Dep
     return new_user
 
 
+@router.post("/organisateurs", response_model=schemas.UtilisateurResponse, status_code=201)
+def create_organisateur(payload: schemas.OrganisateurCreate, db: Session = Depends(get_db)):
+    """Inscription dédiée aux organisateurs : on ne leur demande pas leurs goûts ni
+    leurs disponibilités (inutiles pour eux), mais les informations de leur structure."""
+    email = payload.email.strip().lower()
+    if db.query(models.Utilisateur).filter(models.Utilisateur.email == email).first():
+        raise HTTPException(status_code=409, detail="Email déjà utilisé")
+    if not any(c.isupper() for c in payload.mot_de_passe):
+        raise HTTPException(status_code=422, detail="Le mot de passe doit contenir une majuscule")
+
+    new_user = models.Utilisateur(
+        nom=payload.nom.strip(),
+        email=email,
+        mot_de_passe=hash_mot_de_passe(payload.mot_de_passe),
+        role="organizer",
+    )
+    db.add(new_user)
+    db.flush()
+    db.add(models.ProfilOrganisateur(utilisateur_id=new_user.id, **payload.structure.model_dump()))
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+
+@router.get("/me/organisateur", response_model=schemas.ProfilOrganisateurResponse)
+def read_my_organizer_profile(current_user: models.Utilisateur = Depends(get_current_user)):
+    if not current_user.profil_organisateur:
+        raise HTTPException(status_code=404, detail="Aucun profil organisateur")
+    return current_user.profil_organisateur
+
+
 @router.get("/me", response_model=schemas.UtilisateurResponse)
 def read_me(current_user: models.Utilisateur = Depends(get_current_user)):
     return current_user

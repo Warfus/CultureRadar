@@ -1,0 +1,138 @@
+<div class="register">
+  <div class="card">
+    <h2>Créer un compte organisateur</h2>
+    <p class="subtitle">Salle, association, collectif, festival : présentez votre structure pour publier vos événements sur CultureRadar.</p>
+    <p class="switch">Vous cherchez simplement des sorties ? <a routerLink="/register">Inscription grand public</a></p>
+
+    <form (ngSubmit)="onSubmit()" novalidate>
+      <!-- Structure -->
+      <div class="section">
+        <h3>Votre structure</h3>
+        <div class="grid-2">
+          <div class="field">
+            <label for="nom_structure">Nom de la structure <span class="required">*</span></label>
+            <input id="nom_structure" name="nom_structure" [(ngModel)]="structure.nom_structure" placeholder="Ex. Le Chapiteau de Montreuil" />
+            <div *ngIf="submitted && structure.nom_structure.trim().length < 2" class="error">Nom de la structure requis</div>
+          </div>
+          <div class="field">
+            <label for="type_structure">Type de structure <span class="required">*</span></label>
+            <select id="type_structure" name="type_structure" [(ngModel)]="structure.type_structure">
+              <option value="">— Choisir —</option>
+              <option *ngFor="let t of typesStructure" [value]="t.value">{{ t.label }}</option>
+            </select>
+            <div *ngIf="submitted && !structure.type_structure" class="error">Type requis</div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label for="siret">N° SIRET <span class="muted">(facultatif pour les associations non immatriculées)</span></label>
+            <input id="siret" name="siret" inputmode="numeric" [(ngModel)]="structure.siret" placeholder="14 chiffres" />
+            <div *ngIf="submitted && !siretOk" class="error">Le SIRET compte 14 chiffres</div>
+          </div>
+          <div class="field">
+            <label for="site_web">Site web ou réseau social <span class="muted">(facultatif)</span></label>
+            <input id="site_web" name="site_web" type="url" [(ngModel)]="structure.site_web" placeholder="https://" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="adresse">Adresse du lieu principal <span class="muted">(facultatif)</span></label>
+          <input id="adresse" name="adresse" [(ngModel)]="structure.adresse" placeholder="Ex. 12 rue de Paris" />
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label for="code_postal">Code postal <span class="required">*</span></label>
+            <input id="code_postal" name="code_postal" inputmode="numeric" [(ngModel)]="structure.code_postal" placeholder="93100" />
+            <div *ngIf="submitted && !cpOk" class="error">Code postal à 5 chiffres</div>
+          </div>
+          <div class="field">
+            <label for="commune">Ville <span class="required">*</span></label>
+            <input id="commune" name="commune" [(ngModel)]="structure.commune" placeholder="Montreuil" />
+            <div *ngIf="submitted && !structure.commune.trim()" class="error">Ville requise</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Programmation -->
+      <div class="section">
+        <h3>Votre programmation</h3>
+        <div class="field">
+          <label>Types d'événements proposés <span class="required">*</span></label>
+          <div class="days">
+            <label class="chip" *ngFor="let c of categories">
+              <input #cb type="checkbox" [name]="'cat_' + c.value"
+                     [checked]="categoriesChoisies.includes(c.value)"
+                     (change)="toggleCategorie(c.value, cb.checked)" />
+              <span>{{ c.label }}</span>
+            </label>
+          </div>
+          <div *ngIf="submitted && !categoriesChoisies.length" class="error">Choisissez au moins un type d'événement</div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label for="frequence">Nombre d'événements par mois</label>
+            <select id="frequence" name="frequence" [(ngModel)]="structure.frequence">
+              <option value="">— Choisir —</option>
+              <option *ngFor="let f of frequences" [value]="f">{{ f }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="description">Présentez votre structure en quelques lignes <span class="muted">(facultatif)</span></label>
+          <textarea id="description" name="description" maxlength="1000" [(ngModel)]="structure.description"></textarea>
+        </div>
+      </div>
+
+      <!-- Référent -->
+      <div class="section">
+        <h3>Personne à contacter</h3>
+        <div class="grid-2">
+          <div class="field">
+            <label for="nom">Nom et prénom <span class="required">*</span></label>
+            <input id="nom" name="nom" [(ngModel)]="referent.nom" autocomplete="name" />
+            <div *ngIf="submitted && !referent.nom.trim()" class="error">Nom requis</div>
+          </div>
+          <div class="field">
+            <label for="fonction">Fonction <span class="muted">(facultatif)</span></label>
+            <input id="fonction" name="fonction" [(ngModel)]="referent.fonction" placeholder="Ex. chargée de programmation" />
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label for="email">E-mail professionnel <span class="required">*</span></label>
+            <input id="email" type="email" name="email" [(ngModel)]="referent.email" autocomplete="email" />
+            <div *ngIf="submitted && !emailOk" class="error">Format d'e-mail invalide</div>
+            <div *ngIf="emailExists" class="error">Cet e-mail est déjà utilisé</div>
+          </div>
+          <div class="field">
+            <label for="telephone">Téléphone <span class="muted">(facultatif)</span></label>
+            <input id="telephone" type="tel" name="telephone" [(ngModel)]="referent.telephone" autocomplete="tel" />
+          </div>
+        </div>
+        <div class="field">
+          <label for="password">Mot de passe <span class="required">*</span></label>
+          <div class="password-wrap">
+            <input id="password" [type]="showPassword ? 'text' : 'password'" name="mot_de_passe"
+                   [(ngModel)]="referent.mot_de_passe" autocomplete="new-password" />
+            <button type="button" class="toggle" (click)="showPassword = !showPassword">
+              {{ showPassword ? 'Masquer' : 'Afficher' }}
+            </button>
+          </div>
+          <div class="hint">Au moins 8 caractères et une majuscule.</div>
+          <div *ngIf="submitted && !passwordOk" class="error">Le mot de passe doit contenir au moins 8 caractères et une majuscule.</div>
+        </div>
+        <label class="check">
+          <input type="checkbox" name="cgu" [(ngModel)]="accepteCgu" />
+          <span>J'accepte les <a routerLink="/cgu">conditions générales d'utilisation</a> et je certifie être habilité(e) à représenter cette structure. <span class="required">*</span></span>
+        </label>
+        <div *ngIf="submitted && !accepteCgu" class="error">Acceptation requise</div>
+      </div>
+
+      <div *ngIf="serverError" class="server-error" role="alert">{{ serverError }}</div>
+
+      <button type="submit" class="submit" [disabled]="loading">
+        {{ loading ? 'Création en cours…' : 'Créer mon compte organisateur' }}
+      </button>
+      <p class="footnote">Projet étudiant fictif IAS B3 : aucune structure réelle n'est contactée.</p>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>CultureRadar</title>
+  <meta name="robots" content="noindex" />
+  <!-- Page relais pour les liens directs (ex. /mentions-legales) sur le site statique Render :
+       on repart de l'accueil en gardant l'adresse demandée, que src/index.html remet en place pour le routeur Angular. -->
+  <script>
+    (function () {
+      var l = window.location;
+      if (/[?&]__route=/.test(l.search)) { return; }
+      l.replace('/?__route=' + encodeURIComponent(l.pathname + l.search + l.hash));
+    })();
+  </script>
+</head>
+<body>
+  <p>Chargement de CultureRadar… <a href="/">Retour à l'accueil</a></p>
+</body>
+</html>
