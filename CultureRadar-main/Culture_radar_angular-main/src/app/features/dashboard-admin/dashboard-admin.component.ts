@@ -33,7 +33,11 @@ export class DashboardAdminComponent implements OnInit {
       this.admin.top().toPromise(),
       this.admin.quality().toPromise(),
     ]).then(([ov, s, t, q]) => {
-      this.ov = ov; this.series = s; this.top = t; this.quality = q; this.loading = false;
+      this.series = s;
+      this.ov = this.mapOverview(ov, s, q);
+      this.quality = this.mapQuality(q);
+      this.top = this.mapTop(t);
+      this.loading = false;
     }).catch(() => { this.error = 'Impossible de charger le dashboard.'; this.loading = false; });
   }
 
@@ -42,6 +46,49 @@ export class DashboardAdminComponent implements OnInit {
     this.tab = t;
     if (t === 'users' && !this.users.length) this.loadUsers();
     if (t === 'events' && !this.events.length) this.loadEvents();
+  }
+
+  // Adapte les réponses de l'API (total_users, premium_users...) aux noms utilisés par la page
+  private sumLastDays(series: any, key: string, days = 7): number {
+    const rows: any[] = series?.series || [];
+    return rows.slice(-days).reduce((acc, r) => acc + (r?.[key] || 0), 0);
+  }
+  private mapOverview(ov: any, series: any, q: any) {
+    if (!ov) return null;
+    const total = q?.total_events ?? ov.total_events ?? 0;
+    const withImage = total ? ((total - (q?.missing_image ?? 0)) / total) * 100 : 0;
+    return {
+      users_total: ov.total_users ?? 0,
+      users_new_7d: this.sumLastDays(series, 'signups'),
+      organizers: ov.organizers ?? 0,
+      premium_active: ov.premium_users ?? 0,
+      events_total: ov.total_events ?? 0,
+      events_upcoming: ov.upcoming_events ?? 0,
+      participations_total: ov.total_participations ?? 0,
+      participations_7d: this.sumLastDays(series, 'participations'),
+      rating_avg_global: ov.average_rating,
+      ratings_count: ov.total_ratings ?? 0,
+      events_with_image_pct: withImage,
+    };
+  }
+  private mapQuality(q: any) {
+    if (!q) return null;
+    return {
+      missing_image: q.missing_image ?? 0,
+      missing_description: q.missing_description ?? 0,
+      missing_occurrences: q.without_occurrence ?? 0,
+    };
+  }
+  private mapTop(t: any) {
+    const rows: any[] = Array.isArray(t) ? t : [];
+    const toItem = (r: any, metric: number) => ({ titre: r.titre, commune: r.commune, image_url: null, metric });
+    return {
+      most_participated: rows.filter(r => (r.participations_count || 0) > 0)
+        .map(r => toItem(r, r.participations_count)),
+      best_rated: rows.filter(r => r.average_rating != null)
+        .sort((a, b) => b.average_rating - a.average_rating)
+        .map(r => toItem(r, r.average_rating)),
+    };
   }
 
   // Helpers
